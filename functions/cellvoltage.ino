@@ -2,8 +2,8 @@
 
 bool WarningOvervoltage = false; // Boolescher Wert für Überspannung
 bool WarningUndervoltage = false; // Boolescher Wert für Unterspannung
-unsigned long previousTempMillis = 0; // Variable für Zeitstempel der letzten Spannungsmessung 
-const long tempInterval = 200;       // Konstantes Zeitintervall in ms in dem die Spannung gemessen werden soll (Spannungsmessung alle 200ms)
+unsigned long previousVcellMillis = 0; // Variable für Zeitstempel der letzten Spannungsmessung 
+const long VcellInterval = 200;       // Konstantes Zeitintervall in ms in dem die Spannung gemessen werden soll (Spannungsmessung alle 200ms)
 
 
 // Definition der Zellspannungsüberwachungsfunktion
@@ -12,9 +12,9 @@ void checkcellVoltage()
 {
   unsigned long currentMillis = millis();                     // Variable currentMillis = aktuelle Zeit in ms 
 
-  if (currentMillis - previousTempMillis >= tempInterval) {   // Überprüfen, ob seit letzter Messung min. 200ms vergangen sind. Falls nein, wird Funktion übersprungen.
+  if (currentMillis - previousVcellMillis >= VcellInterval) {   // Überprüfen, ob seit letzter Messung min. 200ms vergangen sind. Falls nein, wird Funktion übersprungen.
 
-    previousTempMillis = currentMillis;                       // Setzen des Zeitstempels der neuen Messung
+    previousVcellMillis = currentMillis;                       // Setzen des Zeitstempels der neuen Messung
 
     float Vcell1 = getCellVoltage(1); // Auslesen und abspeichern Zellspannung 1 als Vcell1
     float Vcell2 = getCellVoltage(2); // Auslesen und abspeichern Zellspannung 2 als Vcell2
