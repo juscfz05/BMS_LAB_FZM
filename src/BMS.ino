@@ -19,6 +19,4 @@ void loop()
   showMeasurementValues();   // Stellt Messwerte numerisch dar
   drawMeasurementCurves(10); // Messkurven - Parameter defines Minutes for full scale of X-Axis
   //showOCVcurve();          // Stellt OCV Kurve der Li-Ionen Zellen dar
-
-  checkTemperature();       // Aufruf der Temperaturüberwachung
 }
