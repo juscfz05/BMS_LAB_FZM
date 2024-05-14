@@ -1,9 +1,7 @@
 // Header mit Definitionen von Variablen
 
-bool WarningOvertemp = false; // Boolescher Wert für Übertemperatur
 unsigned long previousTempMillis = 0; // Variable für Zeitstempel der letzten Temperaturmessung 
 const long tempInterval = 3000;       // Konstantes Zeitintervall in ms in dem die Temperatur gemessen werden soll (Temperaturmessung alle 3s)
-
 
 // Definition der Temperaturüberwachungsfunktion
 
@@ -21,9 +19,9 @@ void checkTemperature()
     float Tcell4 = getCellTemp(4); // Auslesen und abspeichern Zelltemperatur 4 als cell4Temp
       
     if (Tcell1 > 60 || Tcell2 > 60 || Tcell3 > 60 || Tcell4 > 60) {   // Überprüfen, ob eine der Temperaturen über 60 Grad liegt
-      WarningOvertemp = true;   // wenn eine Zelltemperatur >60 Grad: boolesche Variable overTemperatureDetected = true
+      setWarningOvertemp(true);    // Setzen der Übertemperaturwarnung, dass die VCU die Fahrleistung reduziert
     } else {
-      WarningOvertemp = false;  // wenn alle Temperaturen <=60 Grad: boolesche Variable overTemperatureDetected = false
+      setWarningOvertemp(false);    // Entfernen der Übertemperaturwarnung, dass die VCU die Leistung nicht mehr reduziert
     }
   }
 }
