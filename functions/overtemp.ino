@@ -1,12 +1,10 @@
-// Header mit Definitionen von Variablen
-
-unsigned long previousTempMillis = 0; // Variable für Zeitstempel der letzten Temperaturmessung 
-const long tempInterval = 3000;       // Konstantes Zeitintervall in ms in dem die Temperatur gemessen werden soll (Temperaturmessung alle 3s)
-
 // Definition der Temperaturüberwachungsfunktion
 
 void checkTemperature() 
 {
+  static unsigned long previousTempMillis = 0;    // Variable für Zeitstempel der letzten Temperaturmessung. Static, dass nur bei erster Initialisierung der Wert auf 0 gesetzt werden soll. 
+  const long tempInterval = 3000;                 // Konstantes Zeitintervall in ms in dem die Temperatur gemessen werden soll (Temperaturmessung alle 3s)
+
   unsigned long currentMillis = millis();                     // Variable currentMillis = aktuelle Zeit in ms 
 
   if (currentMillis - previousTempMillis >= tempInterval) {   // Überprüfen, ob seit letzter Messung min. 3s vergangen sind. Falls nein, wird Funktion übersprungen.
@@ -25,3 +23,4 @@ void checkTemperature()
     }
   }
 }
+
