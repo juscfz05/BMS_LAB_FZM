@@ -1,21 +1,15 @@
 void checkcellbalancing()
 {
-  static unsigned long previousCellBalMillis = 0; // Variable für Zeitstempel des letzten Cell-Balancing
-  static bool balActive = false;                  // Variable fürs Aktivieren des Cell-Balancing
-  const long cellbalInterval = 200;               // konstantes Zeitintervall in ms in dem das Cell-Balancing durchgeführt werden soll (alle 200ms)
-  unsigned long currentMillis = millis();         // aktuelle Zeit in ms
+  static unsigned long previousCellBalCalcMillis = 0; // Variable für Zeitstempel der letzten Cell-Balancing-Berechnung
+  static unsigned long previousCellBalMillis = 0;     // Variable für Zeitstempel des letzten Cell-Balancing
+  static bool balActive = false;                      // Variable fürs Aktivieren des Cell-Balancing
+  const long cellbalcalcInterval = 200;               // konstantes Zeitintervall (200 ms) in dem die Cell-Balancing-Berechnung durchgeführt wird
+  const long cellbalInterval = 400;                   // konstantes Zeitintervall (400 ms) in dem das Cell-Balancing durchgeführt wird
+  unsigned long currentMillis = millis();             // aktuelle Zeit in ms
 
-  if (currentMillis - previousCellBalMillis >= cellbalInterval) {   // Wird nur ausgeführt, wenn seit letzter Messung min. 200 ms vergangen sind
+  if (currentMillis - previousCellBalCalcMillis >= cellbalcalcInterval) {  // Wird nur ausgeführt, wenn seit letzter Messung 200 ms vergangen sind
 
-    previousCellBalMillis = currentMillis;      // Setzen des Zeitstempels der neuen Messung
-
-    if (balActive == true){
-      setBalancing(1);
-      setBalancing(2);
-      setBalancing(3);
-      setBalancing(4);
-    }
-
+    previousCellBalCalcMillis = currentMillis;        // Setzen des Zeitstempels der neuen Messung
 
     float VCell1 = getCellVoltage(1); // Zellspannung aus Messung Nr. 1
     float VCell2 = getCellVoltage(2); // Zellspannung aus Messung Nr. 2
@@ -34,5 +28,17 @@ void checkcellbalancing()
     bool balActive4 = (abs(VCell4 - Mittelwert) > Standardabweichung || abs(VCell4 - Mittelwert) < Standardabweichung);
 
     balActive = balActive1 && balActive2 && balActive3 && balActive4;
+  }
+
+  if (currentMillis - previousCellBalMillis >= cellbalInterval) {  // Wird nur ausgeführt, wenn seit letzter Messung 400 ms vergangen sind
+    
+    previousCellBalMillis = currentMillis;        // Setzen des Zeitstempels der neuen Messung
+
+    if (balActive == true){
+      setBalancing(1);
+      setBalancing(2);
+      setBalancing(3);
+      setBalancing(4);
+    }
   }
 }
