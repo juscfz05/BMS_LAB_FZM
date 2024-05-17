@@ -25,26 +25,34 @@ void SafetyController()
     
     if (bitRead(regWarnings, 0) == true) {                                  // Zählen wenn Byte regWarnings Bit 0 = true (Überspannung erkannt), sonst Zähler für keine Warning hochzählen
       WarnOvervolt_count++;
+      NoWarnOvervolt_count = 0;
     } else {
       NoWarnOvervolt_count++;
+      WarnOvervolt_count = 0;
     }
 
     if (bitRead(regWarnings, 1) == true) {                                  // Zählen wenn Byte regWarnings Bit 1 = true (Unterspannung erkannt), sonst Zähler für keine Warning hochzählen
       WarnUndervolt_count++;
+      NoWarnUndervolt_count = 0;
     } else {
       NoWarnUndervolt_count++;
+      WarnUndervolt_count = 0;
     }
 
     if (bitRead(regWarnings, 2) == true) {                                  // Zählen wenn Byte regWarnings Bit 2 = true (Übertemperatur erkannt), sonst Zähler für keine Warning hochzählen
       WarnOvertemp_count++;
+      NoWarnOvertemp_count = 0;
     } else {
       NoWarnOvertemp_count++;
+      WarnOvertemp_count = 0;
     }
     
     if (Ibat > 400) {                                                       // Zählen wenn Ibat > 400 A, sonst Zähler für keine Warning hochzählen
       WarnIbat_count++;
+      NoWarnIbat_count = 0;
     } else {
       NoWarnIbat_count++;
+      WarnIbat_count = 0;
     }
 
     if (WarnOvervolt_count > 11 || WarnUndervolt_count > 11 || WarnOvertemp_count > 11 || WarnIbat_count > 11) { // Abfrage ob eine der Warnungen länger als 600 ms (50*12) angehalten hat (BMS 17 und 18)
