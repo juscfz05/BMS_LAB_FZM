@@ -1,5 +1,15 @@
-// Definition der Zellspannungsüberwachungsfunktion
+// Globale Variablen für die Zellspannungen, damit diese an die Funktion checkcellVoltage übergeben werden können
+float Vcell1, Vcell2, Vcell3, Vcell4;                         // Definition der globalen Variable VCellx für die Zellspannung x
 
+// Funktion zum Auslesen der Zellspannungen
+void callofcellVoltage() {
+  Vcell1 = getCellVoltage(1); // Auslesen und Speichern der Zellspannung 1
+  Vcell2 = getCellVoltage(2); // Auslesen und Speichern der Zellspannung 2
+  Vcell3 = getCellVoltage(3); // Auslesen und Speichern der Zellspannung 3
+  Vcell4 = getCellVoltage(4); // Auslesen und Speichern der Zellspannung 4
+}
+
+// Definition der Zellspannungsüberwachungsfunktion
 void checkcellVoltage() 
 {
   static unsigned long previousVcellMillis = 0;               // Variable für Zeitstempel der letzten Spannungsmessung 
@@ -8,12 +18,9 @@ void checkcellVoltage()
 
   if (currentMillis - previousVcellMillis >= VcellInterval) {   // Überprüfen, ob seit letzter Messung min. 200ms vergangen sind. Falls nein, wird Funktion übersprungen.
 
-    previousVcellMillis = currentMillis;                       // Setzen des Zeitstempels der neuen Messung
+    previousVcellMillis = currentMillis;                      // Setzen des Zeitstempels der neuen Messung
 
-    float Vcell1 = getCellVoltage(1); // Auslesen und abspeichern Zellspannung 1 als Vcell1
-    float Vcell2 = getCellVoltage(2); // Auslesen und abspeichern Zellspannung 2 als Vcell2
-    float Vcell3 = getCellVoltage(3); // Auslesen und abspeichern Zellspannung 3 als Vcell3
-    float Vcell4 = getCellVoltage(4); // Auslesen und abspeichern Zellspannung 4 als Vcell4
+    callofcellVoltage();                                      // Aufruf der Funktion, um Zellspannungen zu aktualisieren
 
     if (Vcell1 > 4.2 || Vcell2 > 4.2 || Vcell3 > 4.2 || Vcell4 > 4.2) {   // Überprüfen, ob eine der Spannungen über 4,2 V liegt
       setWarningOvervoltage(true);   // wenn eine Zellspannung > 4,2 V, wird eine Überspannungswarnung für die VCU auf wahr gesetzt
@@ -25,5 +32,6 @@ void checkcellVoltage()
     } else {
       setWarningUndervoltage(false);  // wenn alle Spannungen >= 2,5 V, wird die Unterspannungswarnung für die VCU auf falsch festgelegt
     }
+    
   }
 }
