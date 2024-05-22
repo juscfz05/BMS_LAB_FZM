@@ -1,3 +1,15 @@
+// Globale Variablen für die Zellspannungen, damit diese an die Funktion checkcellVoltage übergeben werden können
+float VCell1, VCell2, VCell3, VCell4;                         // Definition der globalen Variable VCellx für die Zellspannung x
+
+// Funktion zum Auslesen der Zellspannungen
+void callofCellVoltage() {
+  VCell1 = getCellVoltage(1); // Auslesen und Speichern der Zellspannung 1
+  VCell2 = getCellVoltage(2); // Auslesen und Speichern der Zellspannung 2
+  VCell3 = getCellVoltage(3); // Auslesen und Speichern der Zellspannung 3
+  VCell4 = getCellVoltage(4); // Auslesen und Speichern der Zellspannung 4
+}
+
+
 void checkcellbalancing()
 {
   static unsigned long previousCellBalCalcMillis = 0; // Variable für Zeitstempel der letzten Cell-Balancing-Berechnung
@@ -11,10 +23,8 @@ void checkcellbalancing()
 
     previousCellBalCalcMillis = currentMillis;        // Setzen des Zeitstempels der neuen Messung
 
-    float VCell1 = getCellVoltage(1); // Zellspannung aus Messung Nr. 1
-    float VCell2 = getCellVoltage(2); // Zellspannung aus Messung Nr. 2
-    float VCell3 = getCellVoltage(3); // Zellspannung aus Messung Nr. 3
-    float VCell4 = getCellVoltage(4); // Zellspannung aus Messung Nr. 4
+    // Aufruf der Funktion, um Zellspannungen zu aktualisieren
+    callofCellVoltage();
 
     float Mittelwert = (VCell1 + VCell2 + VCell3 + VCell4)/4;                          // Berechnung Mittelwert der 4 Zellspannungen
 
