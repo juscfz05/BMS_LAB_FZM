@@ -1,17 +1,31 @@
-void SafetyController() 
+float Ibat;                   // Definition der globalen Variable Ibat für den Batteriestrom
+bool WarnOvervolt;            // Definition der globalen Variable WarnOvervolt
+bool WarnUndervolt;           // Definition der globalen Variable WarnUndervolt
+bool WarnOvertemp;            // Definition der globalen Variable WarnOvertemp
+
+void readWarnings()
 {
-  static unsigned long previousMillis_Ibat = 0;                           // Erste Zuweisung Variable zum speichern des (letzten) Zeitstempel (für Einlesen Ibat)
+  WarnOvervolt = bitRead(regWarnings, 0);
+  WarnUndervolt = bitRead(regWarnings, 1);
+  WarnOvertemp = bitRead(regWarnings, 2);
+                                                 
+  static unsigned long previousMillis_Ibat = 0;                           // Erste Zuweisung Variable zum speichern des (letzten) Zeitstempel
+  unsigned long currentMillis = millis();                                 // Aktuelle Zeit abrufen
+  const long Interval_Ibat = 200;                                         // Abtastrate 200 ms für kritische Stromwarnung
+
+  if (currentMillis - previousMillis_Ibat >= Interval_Ibat) {             // nach Zeitintervall 200 ms wird Batteriestrom eingelesen
+    previousMillis_Ibat = currentMillis;                                  // Zeitstempel neu setzen
+    Ibat = getPackCurrent();                                              // Batteriestrom einlesen, als Ibat speichern
+  }
+}
+
+void SafetyController() 
+{   
   static unsigned long previousMillis_SC = 0;                             // Erste Zuweisung Variable zum speichern des (letzten) Zeitstempel (für Abfragen Warnungen SafetyController)
   unsigned long currentMillis = millis();                                 // Aktuelle Zeit abrufen
   const long Interval_SC = 50;                                            // Abtastrate 50 ms für Safety Controller
-  const long Interval_Ibat = 200;                                         // Abtastrate 200 ms für kritische Stromwarnung
 
-  if (currentMillis - previousMillis_Ibat >= Interval_Ibat) {             // nach Zeitintervall 200 ms wird Batteriestrom eingelesen (BMS 16)
-    previousMillis_Ibat = currentMillis;                                  // Zeitstempel neu setzen
-    float Ibat = getPackCurrent();                                        // Batteriestrom einlesen, als Ibat speichern
-  }
-
-  static int WarnOvervolt_count = 0;                                        // Definition der Zähler für permanente Warnungen und der Zähler wenn permanente Warnung nicht vorliegt
+  static int WarnOvervolt_count = 0;                                      // Definition der Zähler für permanente Warnungen und der Zähler wenn permanente Warnung nicht vorliegt
   static int NoWarnOvervolt_count = 0;
   static int WarnUndervolt_count = 0;
   static int NoWarnUndervolt_count = 0;
@@ -23,26 +37,28 @@ void SafetyController()
   if (currentMillis - previousMillis_SC >= Interval_SC){                          // nach Zeitintervall 50 ms werden Warnungen abgefragt
     previousMillis_SC = currentMillis;                                            // Zeitstempel neu setzen
     
-    if (bitRead(regWarnings, 0) == true && WarnOvervolt_count < 12) {             // WarnOvervolt_count hochzählen wenn Byte regWarnings Bit 0 = true (Überspannung erkannt) und Zähler < 12
+    readWarnings();
+
+    if (WarnOvervolt == true && WarnOvervolt_count < 12) {             // WarnOvervolt_count hochzählen wenn Byte regWarnings Bit 0 = true (Überspannung erkannt) und Zähler < 12
       WarnOvervolt_count++;
       NoWarnOvervolt_count = 0;
-    } else if (bitRead(regWarnings, 0) == false && NoWarnOvervolt_count < 12){    // NoWarnOvervolt_count hochzählen wenn Byte regWarnings Bit 0 = false (keine Überspannung erkannt) und Zähler < 12
+    } else if (WarnOvervolt == false && NoWarnOvervolt_count < 12){    // NoWarnOvervolt_count hochzählen wenn Byte regWarnings Bit 0 = false (keine Überspannung erkannt) und Zähler < 12
       NoWarnOvervolt_count++;
       WarnOvervolt_count = 0;
     }
 
-    if (bitRead(regWarnings, 1) == true && WarnUndervolt_count < 12) {            // WarnUndervolt_count hochzählen wenn Byte regWarnings Bit 1 = true (Unterspannung erkannt) und Zähler < 12
+    if (WarnUndervolt == true && WarnUndervolt_count < 12) {            // WarnUndervolt_count hochzählen wenn Byte regWarnings Bit 1 = true (Unterspannung erkannt) und Zähler < 12
       WarnUndervolt_count++;
       NoWarnUndervolt_count = 0;
-    } else if (bitRead(regWarnings, 1) == false && NoWarnUndervolt_count < 12) {  // NoWarnUndervolt_count hochzählen wenn Byte regWarnings Bit 1 = false (keine Unterspannung erkannt) und Zähler < 12
+    } else if (WarnUndervolt == false && NoWarnUndervolt_count < 12) {  // NoWarnUndervolt_count hochzählen wenn Byte regWarnings Bit 1 = false (keine Unterspannung erkannt) und Zähler < 12
       NoWarnUndervolt_count++;
       WarnUndervolt_count = 0;
     }
 
-    if (bitRead(regWarnings, 2) == true && WarnOvertemp_count < 12) {             // WarnOvertemp_count hochzählen wenn Byte regWarnings Bit 2 = true (Übertemperatur erkannt) und Zähler < 12
+    if (WarnOvertemp == true && WarnOvertemp_count < 12) {             // WarnOvertemp_count hochzählen wenn Byte regWarnings Bit 2 = true (Übertemperatur erkannt) und Zähler < 12
       WarnOvertemp_count++;
       NoWarnOvertemp_count = 0;
-    } else if (bitRead(regWarnings, 2) == false && NoWarnOvertemp_count < 12){    // NoWarnOvertemp_count hochzählen wenn Byte regWarnings Bit 2 = false (keine Übertemperatur erkannt) und Zähler < 12
+    } else if (WarnOvertemp == false && NoWarnOvertemp_count < 12){    // NoWarnOvertemp_count hochzählen wenn Byte regWarnings Bit 2 = false (keine Übertemperatur erkannt) und Zähler < 12
       NoWarnOvertemp_count++;
       WarnOvertemp_count = 0;
     }
