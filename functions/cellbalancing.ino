@@ -1,20 +1,8 @@
-// Globale Variablen für die Zellspannungen, damit diese an die Funktion checkcellVoltage übergeben werden können
-float VCell1, VCell2, VCell3, VCell4;                         // Definition der globalen Variable VCellx für die Zellspannung x
-
-// Funktion zum Auslesen der Zellspannungen
-void callofCellVoltage() {
-  VCell1 = getCellVoltage(1); // Auslesen und Speichern der Zellspannung 1
-  VCell2 = getCellVoltage(2); // Auslesen und Speichern der Zellspannung 2
-  VCell3 = getCellVoltage(3); // Auslesen und Speichern der Zellspannung 3
-  VCell4 = getCellVoltage(4); // Auslesen und Speichern der Zellspannung 4
-}
-
-
-void checkcellbalancing()
+void checkcellbalancing(float VCell[4])
 {
   static unsigned long previousCellBalCalcMillis = 0; // Variable für Zeitstempel der letzten Cell-Balancing-Berechnung
   static unsigned long previousCellBalMillis = 0;     // Variable für Zeitstempel des letzten Cell-Balancing
-  static bool balActive = false;                      // Variable fürs Aktivieren des Cell-Balancing
+  static bool setbalActive = false;                      // Variable fürs Aktivieren des Cell-Balancing
   const long cellbalcalcInterval = 200;               // konstantes Zeitintervall (200 ms) in dem die Cell-Balancing-Berechnung durchgeführt wird
   const long cellbalInterval = 400;                   // konstantes Zeitintervall (400 ms) in dem das Cell-Balancing durchgeführt wird
   unsigned long currentMillis = millis();             // aktuelle Zeit in ms
@@ -23,32 +11,26 @@ void checkcellbalancing()
 
     previousCellBalCalcMillis = currentMillis;        // Setzen des Zeitstempels der neuen Messung
 
-    // Aufruf der Funktion, um Zellspannungen zu aktualisieren
-    callofCellVoltage();
+    float Mittelwert = (VCell[0] + VCell[1] + VCell[2] + VCell[3])/4;                          // Berechnung Mittelwert der 4 Zellspannungen
 
-    float Mittelwert = (VCell1 + VCell2 + VCell3 + VCell4)/4;                          // Berechnung Mittelwert der 4 Zellspannungen
-
-    float Standardabweichung = sqrt((pow(VCell1-Mittelwert,2)+pow(VCell2-Mittelwert,2) // Berechnung Standardabweichung der 4 Zellspannungen
-    +pow(VCell3-Mittelwert,2)+pow(VCell4-Mittelwert,2))/3);
+    float Standardabweichung = sqrt((pow(VCell[0]-Mittelwert,2)+pow(VCell[1]-Mittelwert,2) // Berechnung Standardabweichung der 4 Zellspannungen
+    +pow(VCell[2]-Mittelwert,2)+pow(VCell[3]-Mittelwert,2))/3);
 
     // Wenn 4 aufeinanderfolgende Messungen den definierten Wertebereich über- oder unterschreiten wird Cell-Balancing aktiviert
-    bool balActive1 = (abs(VCell1 - Mittelwert) > Standardabweichung || abs(VCell1 - Mittelwert) < Standardabweichung); 
-    bool balActive2 = (abs(VCell2 - Mittelwert) > Standardabweichung || abs(VCell2 - Mittelwert) < Standardabweichung);
-    bool balActive3 = (abs(VCell3 - Mittelwert) > Standardabweichung || abs(VCell3 - Mittelwert) < Standardabweichung);
-    bool balActive4 = (abs(VCell4 - Mittelwert) > Standardabweichung || abs(VCell4 - Mittelwert) < Standardabweichung);
+    bool balActive1 = (abs(VCell[0] - Mittelwert) > Standardabweichung || abs(VCell[0] - Mittelwert) < Standardabweichung); 
+    bool balActive2 = (abs(VCell[1] - Mittelwert) > Standardabweichung || abs(VCell[1] - Mittelwert) < Standardabweichung);
+    bool balActive3 = (abs(VCell[2] - Mittelwert) > Standardabweichung || abs(VCell[2] - Mittelwert) < Standardabweichung);
+    bool balActive4 = (abs(VCell[3] - Mittelwert) > Standardabweichung || abs(VCell[3] - Mittelwert) < Standardabweichung);
 
-    balActive = balActive1 && balActive2 && balActive3 && balActive4;
+    setbalActive = balActive1 && balActive2 && balActive3 && balActive4;
   }
 
   if (currentMillis - previousCellBalMillis >= cellbalInterval) {  // Wird nur ausgeführt, wenn seit letzter Messung 400 ms vergangen sind
     
     previousCellBalMillis = currentMillis;        // Setzen des Zeitstempels der neuen Messung
 
-    if (balActive == true){
-      setBalancing(1);
-      setBalancing(2);
-      setBalancing(3);
-      setBalancing(4);
+    if (setbalActive == true){
+      balActive = true;
     }
   }
 }
