@@ -1,3 +1,5 @@
+bool WarningOvertemp = false;                     // Globale Definition der Übertemperaturwarnung als boolesche Variable
+
 void checkTemperature(float Tcell[4])             // Definition der Temperaturüberwachungsfunktion mit der Übergabe eines Arrays mit 4 Temperaturwerten 
 {
   static unsigned long previousTempMillis = 0;    // Variable für Zeitstempel der letzten Temperaturmessung. Static, dass nur bei erster Initialisierung der Wert auf 0 gesetzt werden soll. 
