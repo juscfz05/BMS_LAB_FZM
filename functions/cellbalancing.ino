@@ -1,7 +1,10 @@
-// Globale Variable
-bool balActive = false;
+// Globale Variablen
+int cell1counter = 0;
+int cell2counter = 0;
+int cell3counter = 0;
+int cell4counter = 0;
 
-void checkcellbalancing(float VCell[4])               // Definition der Zellbalancierungsüberwachungsfunktion mit der Übergabe eines Arrays mit 4 Zellspannungen 
+void checkcellbalancing(float VCell[4])
 {
   static unsigned long previousCellBalCalcMillis = 0; // Variable für Zeitstempel der letzten Cell-Balancing-Berechnung
   static unsigned long previousCellBalMillis = 0;     // Variable für Zeitstempel des letzten Cell-Balancing
@@ -19,21 +22,56 @@ void checkcellbalancing(float VCell[4])               // Definition der Zellbala
     float Standardabweichung = sqrt((pow(VCell[0]-Mittelwert,2)+pow(VCell[1]-Mittelwert,2) // Berechnung Standardabweichung der 4 Zellspannungen
     +pow(VCell[2]-Mittelwert,2)+pow(VCell[3]-Mittelwert,2))/3);
 
-    // Wenn 4 aufeinanderfolgende Messungen den definierten Wertebereich über- oder unterschreiten wird Cell-Balancing aktiviert
-    bool balActive1 = (abs(VCell[0] - Mittelwert) > Standardabweichung || abs(VCell[0] - Mittelwert) < Standardabweichung); 
-    bool balActive2 = (abs(VCell[1] - Mittelwert) > Standardabweichung || abs(VCell[1] - Mittelwert) < Standardabweichung);
-    bool balActive3 = (abs(VCell[2] - Mittelwert) > Standardabweichung || abs(VCell[2] - Mittelwert) < Standardabweichung);
-    bool balActive4 = (abs(VCell[3] - Mittelwert) > Standardabweichung || abs(VCell[3] - Mittelwert) < Standardabweichung);
+    // Wenn eine Zellspannung zu groß oder zu klein ist, wird der jeweilige cellcounter hochgezählt
+    if (abs(VCell[0] - Mittelwert) > Standardabweichung) {
+      cell1counter = cell1counter + 1;
+    } else {
+      cell1counter = 0;
+    }
 
-    setbalActive = balActive1 && balActive2 && balActive3 && balActive4;
+    if (abs(VCell[1] - Mittelwert) > Standardabweichung) {
+      cell2counter = cell2counter + 1;
+    } else {
+      cell2counter = 0;
+    }
+
+    if (abs(VCell[2] - Mittelwert) > Standardabweichung) {
+      cell3counter = cell3counter + 1;
+    } else {
+      cell3counter = 0;
+    }
+
+    if (abs(VCell[3] - Mittelwert) > Standardabweichung) {
+      cell4counter = cell4counter + 1;
+    } else {
+      cell4counter = 0;
+    }
+
   }
 
   if (currentMillis - previousCellBalMillis >= cellbalInterval) {  // Wird nur ausgeführt, wenn seit letzter Messung 400 ms vergangen sind
     
     previousCellBalMillis = currentMillis;        // Setzen des Zeitstempels der neuen Messung
 
-    if (setbalActive == true){
-      balActive = true;
+    // Wenn eine Zellspannung einer Zelle 4 mal hintereinander zu sehr abweicht wird das Cell Balancing der jeweiligen Zelle aktiviert
+    if (cell1counter == 4){
+      cell1counter = 0;
+      setBalancing(1);
+    }
+
+    if (cell2counter == 4){
+      cell2counter = 0;
+      setBalancing(2);
+    }
+
+    if (cell3counter == 4){
+      cell3counter = 0;
+      setBalancing(3);
+    }
+
+    if (cell4counter == 4){
+      cell4counter = 0;
+      setBalancing(4);
     }
   }
 }
