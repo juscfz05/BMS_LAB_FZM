@@ -1,4 +1,7 @@
-void checkcellbalancing(float VCell[4])
+// Globale Variable
+bool balActive = false;
+
+void checkcellbalancing(float VCell[4])               // Definition der Zellbalancierungsüberwachungsfunktion mit der Übergabe eines Arrays mit 4 Zellspannungen 
 {
   static unsigned long previousCellBalCalcMillis = 0; // Variable für Zeitstempel der letzten Cell-Balancing-Berechnung
   static unsigned long previousCellBalMillis = 0;     // Variable für Zeitstempel des letzten Cell-Balancing
