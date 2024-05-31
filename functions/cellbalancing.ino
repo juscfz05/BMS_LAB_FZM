@@ -3,12 +3,13 @@ int cell1counter = 0;
 int cell2counter = 0;
 int cell3counter = 0;
 int cell4counter = 0;
+int setbalActive = 0;// Variable für das Aktivieren des Cell-Balancing
 
 void checkcellbalancing(float VCell[4])
 {
   static unsigned long previousCellBalCalcMillis = 0; // Variable für Zeitstempel der letzten Cell-Balancing-Berechnung
   static unsigned long previousCellBalMillis = 0;     // Variable für Zeitstempel des letzten Cell-Balancing
-  static bool setbalActive = false;                      // Variable fürs Aktivieren des Cell-Balancing
+  //static bool setbalActive = false;                      // Variable fürs Aktivieren des Cell-Balancing
   const long cellbalcalcInterval = 200;               // konstantes Zeitintervall (200 ms) in dem die Cell-Balancing-Berechnung durchgeführt wird
   const long cellbalInterval = 400;                   // konstantes Zeitintervall (400 ms) in dem das Cell-Balancing durchgeführt wird
   unsigned long currentMillis = millis();             // aktuelle Zeit in ms
@@ -54,24 +55,22 @@ void checkcellbalancing(float VCell[4])
     previousCellBalMillis = currentMillis;        // Setzen des Zeitstempels der neuen Messung
 
     // Wenn eine Zellspannung einer Zelle 4 mal hintereinander zu sehr abweicht wird das Cell Balancing der jeweiligen Zelle aktiviert
-    if (cell1counter == 4){
+    if (cell1counter >= 4) {
       cell1counter = 0;
-      setBalancing(1);
-    }
-
-    if (cell2counter == 4){
+      setbalActive = 1; // Cell 1 balancieren
+    } else if (cell2counter >= 4) {
       cell2counter = 0;
-      setBalancing(2);
-    }
-
-    if (cell3counter == 4){
+      setbalActive = 2; // Cell 2 balancieren
+    } else if (cell3counter >= 4) {
       cell3counter = 0;
-      setBalancing(3);
-    }
-
-    if (cell4counter == 4){
+      setbalActive = 3; // Cell 3 balancieren
+    } else if (cell4counter >= 4) {
       cell4counter = 0;
-      setBalancing(4);
+      setbalActive = 4; // Cell 4 balancieren
+    } else {
+      setbalActive = 0; // Keine Zelle balancieren
     }
-  }
+  }else{
+    setbalActive = 0; // Keine Zelle balancieren 
+    }
 }
