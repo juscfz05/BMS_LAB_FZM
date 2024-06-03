@@ -1,6 +1,7 @@
+bool BDUtrigger;
+
 void SafetyController(bool WarningOvervoltage, bool WarningUndervoltage, bool WarningOvertemp, float Ibat) 
 { 
-  bool BDUtrigger;
   static unsigned long previousMillis_Ibat = 0;                           // Erste Zuweisung Variable zum speichern des (letzten) Zeitstempel
   unsigned long currentMillis = millis();                                 // Aktuelle Zeit abrufen
   const long Interval_SC = 50;                                            // Abtastrate 50 ms für Safety Controller
@@ -44,7 +45,7 @@ void SafetyController(bool WarningOvervoltage, bool WarningUndervoltage, bool Wa
     if (WarningOvertemp == true && WarnOvertemp_count < 12) {                 // WarnOvertemp_count hochzählen wenn Byte regWarnings Bit 2 = true (Übertemperatur erkannt) und Zähler < 13
       WarnOvertemp_count++;
       NoWarnOvertemp_count = 0;
-    } else if (WarningOvertemp == false && NoWarnOvertemp_count < 13){        // NoWarnOvertemp_count hochzählen wenn Byte regWarnings Bit 2 = false (keine Übertemperatur erkannt) und Zähler < 13
+    } else if (WarningOvertemp == false && NoWarnOvertemp_count < 61){        // NoWarnOvertemp_count hochzählen wenn Byte regWarnings Bit 2 = false (keine Übertemperatur erkannt) und Zähler < 13
       NoWarnOvertemp_count++;
       WarnOvertemp_count = 0;
     }
@@ -59,8 +60,8 @@ void SafetyController(bool WarningOvervoltage, bool WarningUndervoltage, bool Wa
 
     if (WarnOvervolt_count == 12 || WarnUndervolt_count == 12 || WarnOvertemp_count == 12 || WarnIbat_count == 12) { // Abfrage ob eine der Warnungen für 600 ms (50*12) vorliegt
       BDUtrigger = true;    // Bit Schütze öffnen wenn eine Warnung >= 600 ms anliegt
-    } else if (BDUtrigger == true && (NoWarnOvervolt_count >= 12 && NoWarnUndervolt_count >= 12 &&  NoWarnOvertemp_count >= 12 && NoWarnIbat_count >= 12)) { // Abfrage ob keine der Warnungen länger als 600 ms (50*12) vorliegt und Schütze offen sind
-      BDUtrigger = false;   // Bit Schütze schließen wenn für >= 600 ms keine Warnung anliegt
+    } else if (BDUtrigger == true && (NoWarnOvervolt_count >= 12 && NoWarnUndervolt_count >= 12 &&  NoWarnOvertemp_count >= 60 && NoWarnIbat_count >= 12)) { // Abfrage ob keine der Warnungen länger als 600 ms (50*12) vorliegt und Schütze offen sind
+      BDUtrigger = false;   // Bit Schütze schließen wenn für >= 600 ms keine Warnung  und >= 3s keine kritische Temperatur anliegt
     } 
   }
 }
