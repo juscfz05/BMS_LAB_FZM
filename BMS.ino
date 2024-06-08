@@ -18,14 +18,12 @@ void setup()
 
 void loop() 
 { 
-  unsigned long Spg_start;
-  unsigned long Spg_end;
-
-  unsigned long tmp_start;
-  unsigned long tmp_end;
-
-  unsigned long Safe_start;
-  unsigned long Safe_end;
+  unsigned long start_loop = millis();
+  unsigned long end_loop;
+  //unsigned long start_warning;
+  //unsigned long time_BDU_open;
+  //unsigned long time_BDU_close;
+  //unsigned long start_no_warning;
 
   // variables
   float VCell[4];
@@ -40,43 +38,58 @@ void loop()
   VCell[1] = getCellVoltage(2);
   VCell[2] = getCellVoltage(3);
   VCell[3] = getCellVoltage(4);
+  checkcellVoltage(VCell);  // call function checkcellVoltage
 
   // get cell tempratures
   TCell[0] = getCellTemp(1);
   TCell[1] = getCellTemp(2);
   TCell[2] = getCellTemp(3);
   TCell[3] = getCellTemp(4);
+  checkTemperature(TCell);  // call function checkTemperature
 
+  //if(WarningOvervoltage == true || WarningUndervoltage == true ||WarningOvertemp == true){ // print Warnings
+    //start_warning = millis();
+    //Serial.print("Warning Overvoltage: ");
+    //Serial.println(WarningOvervoltage);
+    //Serial.print("Warning Undervoltage: ");
+    //Serial.println(WarningUndervoltage);
+    //Serial.print("Warning Overtemp.: ");
+    //Serial.println(WarningOvertemp);
+  //}  else if (WarningOvervoltage == false & WarningUndervoltage == false & WarningOvertemp == false){start_no_warning = millis();}
+  
+  
   // get batterypack current
   Ibat = getPackCurrent();
 
-  checkcellVoltage(VCell);  // call function checkcellVoltage
-  checkTemperature(TCell);  // call function checkTemperature
-
-  if(WarningOvervoltage == true || WarningUndervoltage == true ||WarningOvertemp == true){
-    Serial.print("Warning over: ");
-    Serial.println(WarningOvervoltage);
-    Serial.print("Warning under: ");
-    Serial.println(WarningUndervoltage);
-    Serial.print("Warning temp: ");
-    Serial.println(WarningOvertemp);
-  }
   SafetyController(WarningOvervoltage, WarningUndervoltage, WarningOvertemp, Ibat); // call function SafetyController
-  Serial.print("BDU: ");
-  Serial.println(BDUtrigger);
 
-  if (BDUtrigger == true){
+  //Serial.print("BDU: "); // Print BDU trigger
+  //Serial.println(BDUtrigger);
+
+  if (BDUtrigger == true){    
     setBDU_Activation(false); // disconect BDU
+    //time_BDU_open = millis();
+    //Serial.print("Zeit zwischen Warning und öffnen der Schütze: ");
+    //Serial.println(time_BDU_open-start_warning);
   }
   else if(BDUtrigger == false){
     setBDU_Activation(true);  // reconnect BDU
+    //time_BDU_close = millis();
+    //Serial.print("Zeit zwischen Warning und schließen der Schützen: ");
+    //Serial.println(time_BDU_close-start_no_warning);
   }
 
   checkcellbalancing(VCell);  // call function checkcellbalancing
+
   if (setbalActive != 0){
       setBalancing(setbalActive);   // activate cellbalancing
   }
 
   showMeasurementValues(VCell, TCell, Ibat, WarningOvertemp, WarningOvervoltage, WarningUndervoltage);   // Stellt Messwerte numerisch dar
-  drawMeasurementCurves(10, VCell, TCell, Ibat); // Messkurven - Parameter defines Minutes for full scale of X-Axis
+  drawMeasurementCurves(1, VCell, TCell, Ibat); // Messkurven - Parameter defines Minutes for full scale of X-Axis
+  end_loop = millis();
+
+  Serial.print("Looptime: ");
+  Serial.println(end_loop - start_loop);
+  Serial.print("\n\n");
 }
