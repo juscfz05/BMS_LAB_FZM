@@ -3,11 +3,6 @@
 #include <Adafruit_ILI9341.h> // Display library
 #include <TouchScreen.h>      // Display touch functionality
 
-//# include"F:\BMS\functions\cellbalancing.ino"
-//# include"F:\BMS\functions\cellvoltage.ino"
-//# include"F:\BMS\functions\overtemp.ino"
-//# include"F:\BMS\functions\SafetyController.ino"
-
 extern volatile uint32_t pwmDuration;
 float VCell_meas[4];
 float TCell_meas[4];
@@ -22,6 +17,7 @@ void setup()
 
 void loop() 
 { 
+  unsigned long start_loop = millis();
   // variables
   float Ibat;
 
