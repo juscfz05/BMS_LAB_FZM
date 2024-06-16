@@ -64,8 +64,8 @@ void drawMeasurementCurves(uint16_t fullScreenDuration, float Vcell[4], float Tc
   drawLine(0,mVo, mX,mVo,ILI9341_DARKGREY); writeText(0, mVo-9, 1, "4.2V", colCell(3)); // draw lower Cell Voltage limit
 
   drawLine( 0,yI,mX,yI,rgb565(0,0,150)); writeText(319-12, yI-9, 1, "0A",ILI9341_BLUE); // draw 0A Line
-  drawLine( 0,yI-sI,mX,yI-sI,rgb565(0,0,100)); writeText(319-24, yI-9-sI, 1, "400A",ILI9341_BLUE); // draw Upper Current limit
-  drawLine(20,yI+sI,mX,yI+sI,rgb565(0,0,100)); writeText(319-30, yI-9+sI, 1, "-400A",ILI9341_BLUE); // draw Lower Current limit
+  drawLine( 0,yI-sI,mX,yI-sI,rgb565(0,0,100)); writeText(319-24, yI-9-sI, 1, "400A",ILI9341_LIGHTGREY); // draw Upper Current limit
+  drawLine(20,yI+sI,mX,yI+sI,rgb565(0,0,100)); writeText(319-30, yI-9+sI, 1, "-400A",ILI9341_LIGHTGREY); // draw Lower Current limit
 
   drawLine(0,yT,mX,yT,ILI9341_DARKGREY); writeText(0, yT-9, 1,  "0C", colTemp(3)); // draw lower Temperature limit
   drawLine(0,mT,mX,mT,ILI9341_DARKGREY); writeText(0, mT-9, 1, "60C", colTemp(3)); // draw upper Temperature limit
